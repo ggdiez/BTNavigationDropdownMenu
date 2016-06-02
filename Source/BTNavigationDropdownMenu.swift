@@ -193,16 +193,18 @@ public class BTNavigationDropdownMenu: UIView {
     private var items: [AnyObject]!
     private var menuWrapper: UIView!
     
+    private let defaultHeightPadding : CGFloat = 300.0
+    
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     @available(*, deprecated, message="Use init(navigationController:title:items:) instead", renamed="BTNavigationDropdownMenu(navigationController: UINavigationController?, title: String, items: [AnyObject])")
-    public convenience init(title: String, items: [AnyObject]) {
-        self.init(navigationController: nil, title: title, items: items)
+    public convenience init(title: String, items: [AnyObject], heightPadding: CGFloat?) {
+        self.init(navigationController: nil, title: title, items: items, heightPadding: heightPadding)
     }
     
-    public init(navigationController: UINavigationController? = nil, title: String, items: [AnyObject]) {
+    public init(navigationController: UINavigationController? = nil, title: String, items: [AnyObject], heightPadding: CGFloat?) {
         
         // Navigation controller
         if let navigationController = navigationController {
@@ -256,8 +258,14 @@ public class BTNavigationDropdownMenu: UIView {
         let backgroundTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(BTNavigationDropdownMenu.hideMenu));
         self.backgroundView.addGestureRecognizer(backgroundTapRecognizer)
         
+        var customPadding = heightPadding
+        
+        if customPadding == nil {
+            customPadding = self.defaultHeightPadding
+        }
+        
         // Init table view
-        self.tableView = BTTableView(frame: CGRectMake(menuWrapperBounds.origin.x, menuWrapperBounds.origin.y + 0.5, menuWrapperBounds.width, menuWrapperBounds.height + 200), items: items, title: title, configuration: self.configuration)
+        self.tableView = BTTableView(frame: CGRectMake(menuWrapperBounds.origin.x, menuWrapperBounds.origin.y + 0.5, menuWrapperBounds.width, menuWrapperBounds.height + customPadding!), items: items, title: title, configuration: self.configuration)
         
         self.tableView.selectRowAtIndexPathHandler = { [weak self] (indexPath: Int) -> () in
             self?.didSelectItemAtIndexHandler!(indexPath: indexPath)
